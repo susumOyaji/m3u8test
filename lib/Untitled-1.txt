@@ -27,7 +27,7 @@ Future get_ts(url)async{
   String url_pre = all_url.join();//'/'.join(all_url[-1]) + '/';			//最後の項目を破棄し、新しい URL にステッチします
 	String url_next = all_url[-1];											//リストall_url末尾にある項目を取得します
 	
-	//String m3u8_txt = requests.get(url, headers = {'Connection':'close'});	//requests.get() 関数は requests.models.Response オブジェクトを返します
+	String m3u8_txt = requests.get(url, headers = {'Connection':'close'});	//requests.get() 関数は requests.models.Response オブジェクトを返します
 	final m3u8_txt = await http.get(url);
   
   

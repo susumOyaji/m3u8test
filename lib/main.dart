@@ -1,5 +1,11 @@
+import 'dart:async';
+import 'dart:io';
+//import 'package:http_server/http_server.dart';
+//import "dart:isolate";
+import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
+//import 'package:http/http.dart' as http;
+import 'dart:html';
 
 void main() {
   runApp(MyApp());
@@ -67,7 +73,7 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future get_ts(url) async {
-    String path = "E://Clone Videos"; //既定のビデオ保存パス
+    const path = "E://Clone Videos"; //既定のビデオ保存パス
 
     //String all_url = url.split('/');
     //'https://d.ossrs.net:8088/live/livestream.m3u8'
@@ -77,8 +83,31 @@ class _MyHomePageState extends State<MyHomePage> {
     String url_next = all_url[-1]; //リストall_url末尾にある項目を取得します
 
     //String m3u8_txt = requests.get(url, headers = {'Connection':'close'});	//requests.get() 関数は requests.models.Response オブジェクトを返します
-    final m3u8_txt = await http.get(url);
-    print(m3u8_txt);
+    var m3u8_txt = await HttpRequest.getString(url); //await http.get(url);
+    final jsonString = await HttpRequest.getString(url);
+
+    var contents = await m3u8_txt.readAsBytes();
+    print('The file is ${contents.length} bytes long.');
+    //print(m3u8_txt);
+  }
+
+  Future<void> makeRequest(Event _) async {
+    const path = 'https://dart.dev/f/portmanteaux.json';
+    try {
+      // Make the GET request
+      final jsonString = await HttpRequest.getString(path);
+      // The request succeeded. Process the JSON.
+      processResponse(jsonString);
+    } catch (e) {
+      // The GET request failed. Handle the error.
+      // ···
+    }
+  }
+
+  void processResponse(String jsonString) {
+    for (final portmanteau in json.decode(jsonString)) {
+      wordList.children.add(LIElement()..text = portmanteau as String);
+    }
   }
 
   @override
