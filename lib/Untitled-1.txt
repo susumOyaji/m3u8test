@@ -31,7 +31,7 @@ Future get_ts(url)async{
 	final m3u8_txt = await http.get(url);
   
   
-  while open(url_next, 'wb') as m3u8_content:						//m3u8 ファイル(m3u8_content)を新規作成します
+  with open(url_next, 'wb') as m3u8_content:						//m3u8 ファイル(m3u8_content)を新規作成します
 		m3u8_content.write(m3u8_txt.content);						//m3u8_txt.content はバイト ストリームです
 	
 	  List movies = [];			//取得した完全な .ts ビデオ リンクを格納するリストを作成します

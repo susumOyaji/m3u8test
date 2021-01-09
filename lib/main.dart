@@ -4,8 +4,7 @@ import 'dart:io';
 //import "dart:isolate";
 import 'dart:convert';
 import 'package:flutter/material.dart';
-//import 'package:http/http.dart' as http;
-import 'dart:html';
+import 'package:http/http.dart' as http;
 
 void main() {
   runApp(MyApp());
@@ -73,6 +72,39 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   Future get_ts(url) async {
+    const download_path = os.getcwd() + "\download";
+
+    if not os.path.exists(download_path):
+        os.mkdir(download_path);//ディレクトリ作成
+
+    String all_content = requests.get(url).text;  //M3U8 のファイルの内容を取得します# 获取M3U8的文件内容
+    String file_line = all_content.split("\r\n"); //ファイル内の各行を読み取ります# 读取文件里的每一行
+
+
+
+    //ファイル ヘッダーを判断して、M3U8 ファイルかどうかを判断します# 通过判断文件头来确定是否是M3U8文件
+    if file_line[0] != "#EXTM3U":
+        raise BaseException(u"M3U8 以外のリンク非M3U8的链接")
+    else:
+        unknow = True  //ダウンロードのアドレスが見つかったかどうかを判断するために使用されます# 用来判断是否找到了下载的地址
+        for index, line in enumerate(file_line):
+            if "EXTINF" in line:
+                unknow = False
+                //ts フラグメントの URL を綴ります# 拼出ts片段的URL
+                pd_url = url.rsplit("/", 1)[0] + "/" + file_line[index + 1]
+                res = requests.get(pd_url)
+                c_fule_name = str(file_line[index + 1])
+                with open(download_path + "\\" + c_fule_name, 'ab') as f:
+                    f.write(res.content)
+                    f.flush()
+        if unknow:
+            raise BaseException("対応するダウンロード リンクが見つかではありません未找到对应的下载链接")
+        else:
+            print u"ダウンロードが完了しました下载完成"
+
+
+
+
     const path = "E://Clone Videos"; //既定のビデオ保存パス
 
     //String all_url = url.split('/');
@@ -83,31 +115,11 @@ class _MyHomePageState extends State<MyHomePage> {
     String url_next = all_url[-1]; //リストall_url末尾にある項目を取得します
 
     //String m3u8_txt = requests.get(url, headers = {'Connection':'close'});	//requests.get() 関数は requests.models.Response オブジェクトを返します
-    var m3u8_txt = await HttpRequest.getString(url); //await http.get(url);
-    final jsonString = await HttpRequest.getString(url);
+    var m3u8_txt = await http.get(url);
+    print(m3u8_txt);
 
-    var contents = await m3u8_txt.readAsBytes();
-    print('The file is ${contents.length} bytes long.');
-    //print(m3u8_txt);
-  }
-
-  Future<void> makeRequest(Event _) async {
-    const path = 'https://dart.dev/f/portmanteaux.json';
-    try {
-      // Make the GET request
-      final jsonString = await HttpRequest.getString(path);
-      // The request succeeded. Process the JSON.
-      processResponse(jsonString);
-    } catch (e) {
-      // The GET request failed. Handle the error.
-      // ···
-    }
-  }
-
-  void processResponse(String jsonString) {
-    for (final portmanteau in json.decode(jsonString)) {
-      wordList.children.add(LIElement()..text = portmanteau as String);
-    }
+    //with open(url_next, 'wb') as m3u8_content: //m3u8 ファイル(m3u8_content)を新規作成します
+    //m3u8_content.write(m3u8_txt.content); //m3u8_txt.content はバイト ストリームです
   }
 
   @override
