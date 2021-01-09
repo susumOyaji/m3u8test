@@ -5,6 +5,7 @@ import 'dart:io';
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'package:/path_provider.dart';
 
 void main() {
   runApp(MyApp());
@@ -55,53 +56,44 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
-  String url = 'https://d.ossrs.net:8088/live/livestream.m3u8';
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-      get_ts(url);
-    });
-  }
+Future get_ts(url) async {
+    //const download_path = os.getcwd() + "\download";//downloadパスの取得
+    const download_path = await getDownloadsDirectory();  
+    if (not os.path.exists(download_path)){
+        os.mkdir(download_path);//downloadディレクトリが無い時、ディレクトリ作成
+    }
 
-  Future get_ts(url) async {
-    const download_path = os.getcwd() + "\download";
-
-    if not os.path.exists(download_path):
-        os.mkdir(download_path);//ディレクトリ作成
-
-    String all_content = requests.get(url).text;  //M3U8 のファイルの内容を取得します# 获取M3U8的文件内容
-    String file_line = all_content.split("\r\n"); //ファイル内の各行を読み取ります# 读取文件里的每一行
+    String all_content = requests.get(url).text;  //M3U8 のファイルの内容を取得します
+    String file_line = all_content.split("\r\n"); //ファイル内の各行を読み取ります
 
 
 
-    //ファイル ヘッダーを判断して、M3U8 ファイルかどうかを判断します# 通过判断文件头来确定是否是M3U8文件
-    if file_line[0] != "#EXTM3U":
-        raise BaseException(u"M3U8 以外のリンク非M3U8的链接")
-    else:
-        unknow = True  //ダウンロードのアドレスが見つかったかどうかを判断するために使用されます# 用来判断是否找到了下载的地址
-        for index, line in enumerate(file_line):
-            if "EXTINF" in line:
-                unknow = False
+    //ファイル ヘッダーを判断して、M3U8 ファイルかどうかを判断します
+    if (file_line[0] != "#EXTM3U"){
+        raise BaseException("M3U8 以外のリンク");
+    }    
+    else{
+        bool unknow = true;  //ダウンロードのアドレスが見つかったかどうかを判断するために使用されます# 用来判断是否找到了下载的地址
+        for (index, line in enumerate(file_line)){
+            if ("EXTINF" in line){
+                unknow = false;
                 //ts フラグメントの URL を綴ります# 拼出ts片段的URL
-                pd_url = url.rsplit("/", 1)[0] + "/" + file_line[index + 1]
-                res = requests.get(pd_url)
-                c_fule_name = str(file_line[index + 1])
+                String pd_url = url.rsplit("/", 1)[0] + "/" + file_line[index + 1];
+                String res = requests.get(pd_url);
+                String c_fule_name = str(file_line[index + 1]);
                 with open(download_path + "\\" + c_fule_name, 'ab') as f:
-                    f.write(res.content)
-                    f.flush()
-        if unknow:
-            raise BaseException("対応するダウンロード リンクが見つかではありません未找到对应的下载链接")
-        else:
-            print u"ダウンロードが完了しました下载完成"
-
+                    f.write(res.content);
+                    f.flush();
+            }        
+        }            
+        if (unknow){
+            raise BaseException("対応するダウンロード リンクが見つかではありません");
+        }    
+        else{
+            print("ダウンロードが完了しました");
+        }    
+    }
 
 
 
@@ -121,6 +113,29 @@ class _MyHomePageState extends State<MyHomePage> {
     //with open(url_next, 'wb') as m3u8_content: //m3u8 ファイル(m3u8_content)を新規作成します
     //m3u8_content.write(m3u8_txt.content); //m3u8_txt.content はバイト ストリームです
   }
+
+
+
+
+
+
+class _MyHomePageState extends State<MyHomePage> {
+  int _counter = 0;
+  String url = 'https://d.ossrs.net:8088/live/livestream.m3u8';
+
+  void _incrementCounter() {
+    setState(() {
+      // This call to setState tells the Flutter framework that something has
+      // changed in this State, which causes it to rerun the build method below
+      // so that the display can reflect the updated values. If we changed
+      // _counter without calling setState(), then the build method would not be
+      // called again, and so nothing would appear to happen.
+      _counter++;
+      get_ts(url);
+    });
+  }
+
+  
 
   @override
   Widget build(BuildContext context) {
