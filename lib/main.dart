@@ -1,11 +1,11 @@
 import 'dart:async';
 import 'dart:io';
-//import 'package:http_server/http_server.dart';
-//import "dart:isolate";
 import 'dart:convert';
 import 'package:flutter/material.dart';
+
 import 'package:http/http.dart' as http;
-import 'package:/path_provider.dart';
+import 'package:path_provider/path_provider.dart';
+import 'shared_prefs.dart';
 
 void main() {
   runApp(MyApp());
@@ -59,22 +59,30 @@ class MyHomePage extends StatefulWidget {
 
 Future get_ts(url) async {
     //const download_path = os.getcwd() + "\download";//downloadパスの取得
-    const download_path = await getDownloadsDirectory();  
-    if (not os.path.exists(download_path)){
-        os.mkdir(download_path);//downloadディレクトリが無い時、ディレクトリ作成
+    //const download_path = await getDownloadsDirectory();
+    Directory appDocDir = await getApplicationDocumentsDirectory();
+    String download_path = appDocDir.path;
+     
+    if (download_path == null){
+        //os.mkdir(download_path);//downloadディレクトリが無い時、ディレクトリ作成
+        new Directory('download_path').create(recursive: true);
     }
 
-    String all_content = requests.get(url).text;  //M3U8 のファイルの内容を取得します
-    String file_line = all_content.split("\r\n"); //ファイル内の各行を読み取ります
+    //String all_content = requests.get(url).text;  //M3U8 のファイルの内容を取得します
+    var all_content = await HttpClient().getUrl(url);
+    var response = await all_content.close();
+    var all_content_string = all_content.toString();
+    var file_line = all_content_string.split("\r\n"); //ファイル内の各行を読み取ります
 
 
 
     //ファイル ヘッダーを判断して、M3U8 ファイルかどうかを判断します
     if (file_line[0] != "#EXTM3U"){
-        raise BaseException("M3U8 以外のリンク");
+        throw Exception("M3U8 以外のリンク");
+        //raise BaseException("M3U8 以外のリンク");
     }    
     else{
-        bool unknow = true;  //ダウンロードのアドレスが見つかったかどうかを判断するために使用されます# 用来判断是否找到了下载的地址
+        bool unknow = true;  //ダウンロードのアドレスが見つかったかどうかを判断するために使用されます
         for (index, line in enumerate(file_line)){
             if ("EXTINF" in line){
                 unknow = false;
@@ -88,7 +96,8 @@ Future get_ts(url) async {
             }        
         }            
         if (unknow){
-            raise BaseException("対応するダウンロード リンクが見つかではありません");
+          throw Exception("対応するダウンロードリンクが見つかりません");  
+          //raise BaseException("対応するダウンロード リンクが見つかではありません");
         }    
         else{
             print("ダウンロードが完了しました");
@@ -122,6 +131,22 @@ Future get_ts(url) async {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
   String url = 'https://d.ossrs.net:8088/live/livestream.m3u8';
+
+
+  @override
+  void initState() {
+    SharePrefs.setInstance();
+
+    //codeItems = SharePrefs.getCodeItems();
+    //stockItems = SharePrefs.getStockItems();
+    //valueItems = SharePrefs.getValueItems();
+    //acquiredAssetsItems = SharePrefs.getacquiredAssetsItems(); //取得資産
+    //valuableAssetsItems = SharePrefs.getvaluableAssetsItems();
+    super.initState();
+
+  }
+
+
 
   void _incrementCounter() {
     setState(() {
