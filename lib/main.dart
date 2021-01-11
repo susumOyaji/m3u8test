@@ -56,82 +56,72 @@ class MyHomePage extends StatefulWidget {
   _MyHomePageState createState() => _MyHomePageState();
 }
 
-
 Future get_ts(url) async {
-    //const download_path = os.getcwd() + "\download";//downloadパスの取得
-    //const download_path = await getDownloadsDirectory();
-    Directory appDocDir = await getApplicationDocumentsDirectory();
-    String download_path = appDocDir.path;
-     
-    if (download_path == null){
-        //os.mkdir(download_path);//downloadディレクトリが無い時、ディレクトリ作成
-        new Directory('download_path').create(recursive: true);
-    }
+  //const download_path = os.getcwd() + "\download";//downloadパスの取得
+  //const download_path = await getDownloadsDirectory();
+  Directory appDocDir = await getApplicationDocumentsDirectory();
+  String download_path = appDocDir.path;
 
-    //String all_content = requests.get(url).text;  //M3U8 のファイルの内容を取得します
-    var all_content = await HttpClient().getUrl(url);
-    var response = await all_content.close();
-    var all_content_string = all_content.toString();
-    var file_line = all_content_string.split("\r\n"); //ファイル内の各行を読み取ります
-
-
-
-    //ファイル ヘッダーを判断して、M3U8 ファイルかどうかを判断します
-    if (file_line[0] != "#EXTM3U"){
-        throw Exception("M3U8 以外のリンク");
-        //raise BaseException("M3U8 以外のリンク");
-    }    
-    else{
-        bool unknow = true;  //ダウンロードのアドレスが見つかったかどうかを判断するために使用されます
-        for (index, line in enumerate(file_line)){
-            if ("EXTINF" in line){
-                unknow = false;
-                //ts フラグメントの URL を綴ります# 拼出ts片段的URL
-                String pd_url = url.rsplit("/", 1)[0] + "/" + file_line[index + 1];
-                String res = requests.get(pd_url);
-                String c_fule_name = str(file_line[index + 1]);
-                with open(download_path + "\\" + c_fule_name, 'ab') as f:
-                    f.write(res.content);
-                    f.flush();
-            }        
-        }            
-        if (unknow){
-          throw Exception("対応するダウンロードリンクが見つかりません");  
-          //raise BaseException("対応するダウンロード リンクが見つかではありません");
-        }    
-        else{
-            print("ダウンロードが完了しました");
-        }    
-    }
-
-
-
-    const path = "E://Clone Videos"; //既定のビデオ保存パス
-
-    //String all_url = url.split('/');
-    //'https://d.ossrs.net:8088/live/livestream.m3u8'
-    List<String> all_url = url.split('/'); //split は '/' に基づいて文字列をリストに分割します
-    String url_pre = all_url
-        .join(); //'/'.join(all_url[-1]) + '/';			//最後の項目を破棄し、新しい URL にステッチします
-    String url_next = all_url[-1]; //リストall_url末尾にある項目を取得します
-
-    //String m3u8_txt = requests.get(url, headers = {'Connection':'close'});	//requests.get() 関数は requests.models.Response オブジェクトを返します
-    var m3u8_txt = await http.get(url);
-    print(m3u8_txt);
-
-    //with open(url_next, 'wb') as m3u8_content: //m3u8 ファイル(m3u8_content)を新規作成します
-    //m3u8_content.write(m3u8_txt.content); //m3u8_txt.content はバイト ストリームです
+  if (download_path == null) {
+    //os.mkdir(download_path);//downloadディレクトリが無い時、ディレクトリ作成
+    new Directory('download_path').create(recursive: true);
   }
 
+  //String all_content = requests.get(url).text;  //M3U8 のファイルの内容を取得します
+  var all_content = await HttpClient().getUrl(url);
+  var response = await all_content.close();
+  var all_content_string = all_content.toString();
+  var file_line = all_content_string.split("\r\n"); //ファイル内の各行を読み取ります
 
+  //ファイル ヘッダーを判断して、M3U8 ファイルかどうかを判断します
+  if (file_line[0] != "#EXTM3U") {
+    throw Exception("M3U8 以外のリンク");
+    //raise BaseException("M3U8 以外のリンク");
+  } else {
+    bool unknow = true; //ダウンロードのアドレスが見つかったかどうかを判断するために使用されます
+    //ndex関数を使えば、探したい要素がリストの何番目に存在するかを知ることができます。
+    //for (index, line in enumerate(file_line)){
+    //enumerate関数を使うと、要素のインデックスと要素を同時に取り出す事が出来ます。
+    for (String line in file_line) {
+      if ("EXTINF" == line) {
+        unknow = false;
+        //ts フラグメントの URL を綴ります
+        var pd_url = url.rsplit("/", 1)[0] + "/" + file_line[0 + 1];
+        var res = await HttpClient().getUrl(pd_url).toString();
+        var c_fule_name = (file_line[0 + 1]).toString();
+        var f = open(download_path + "\\" + c_fule_name, 'ab');
+        f.write(res.content);
+        f.flush();
+      }
+    }
+    if (unknow) {
+      throw Exception("対応するダウンロードリンクが見つかりません");
+      //raise BaseException("対応するダウンロード リンクが見つかではありません");
+    } else {
+      print("ダウンロードが完了しました");
+    }
+  }
 
+  const path = "E://Clone Videos"; //既定のビデオ保存パス
 
+  //String all_url = url.split('/');
+  //'https://d.ossrs.net:8088/live/livestream.m3u8'
+  List<String> all_url = url.split('/'); //split は '/' に基づいて文字列をリストに分割します
+  String url_pre = all_url
+      .join(); //'/'.join(all_url[-1]) + '/';			//最後の項目を破棄し、新しい URL にステッチします
+  String url_next = all_url[-1]; //リストall_url末尾にある項目を取得します
 
+  //String m3u8_txt = requests.get(url, headers = {'Connection':'close'});	//requests.get() 関数は requests.models.Response オブジェクトを返します
+  var m3u8_txt = await http.get(url);
+  print(m3u8_txt);
+
+  //with open(url_next, 'wb') as m3u8_content: //m3u8 ファイル(m3u8_content)を新規作成します
+  //m3u8_content.write(m3u8_txt.content); //m3u8_txt.content はバイト ストリームです
+}
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
   String url = 'https://d.ossrs.net:8088/live/livestream.m3u8';
-
 
   @override
   void initState() {
@@ -143,10 +133,7 @@ class _MyHomePageState extends State<MyHomePage> {
     //acquiredAssetsItems = SharePrefs.getacquiredAssetsItems(); //取得資産
     //valuableAssetsItems = SharePrefs.getvaluableAssetsItems();
     super.initState();
-
   }
-
-
 
   void _incrementCounter() {
     setState(() {
@@ -159,8 +146,6 @@ class _MyHomePageState extends State<MyHomePage> {
       get_ts(url);
     });
   }
-
-  
 
   @override
   Widget build(BuildContext context) {
