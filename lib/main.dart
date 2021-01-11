@@ -69,7 +69,7 @@ Future get_ts(url) async {
 
   //String all_content = requests.get(url).text;  //M3U8 のファイルの内容を取得します
   var all_content = await HttpClient().getUrl(url);
-  var response = await all_content.close();
+  //var response = await all_content.close();
   var all_content_string = all_content.toString();
   var file_line = all_content_string.split("\r\n"); //ファイル内の各行を読み取ります
 
@@ -89,9 +89,11 @@ Future get_ts(url) async {
         var pd_url = url.rsplit("/", 1)[0] + "/" + file_line[0 + 1];
         var res = await HttpClient().getUrl(pd_url).toString();
         var c_fule_name = (file_line[0 + 1]).toString();
-        var f = open(download_path + "\\" + c_fule_name, 'ab');
-        f.write(res.content);
-        f.flush();
+        //var f = open(download_path + "\\" + c_fule_name, 'ab');
+        var f = File(c_fule_name).readAsString();//.then(String contents);
+        //f.write(res.content);
+        File(c_fule_name).writeAsString('some content');
+        //f.flush();
       }
     }
     if (unknow) {
