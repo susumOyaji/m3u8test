@@ -48,16 +48,28 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+  //var _url = 'https://d.ossrs.net:8088/live/livestream.m3u8';
 
-  //String _url = 'https://d.ossrs.net:8088/live/livestream.u3m8';
-  String _url = "https://stocks.finance.yahoo.co.jp/stocks/detail/?code=6758";
-  //String _url =
-  //    'https://samples.openweathermap.org/data/2.5/weather?lat=35&lon=139&appid=439d4b804bc8187953eb36d2a8c26a02';
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   @override
   void initState() {
     SharePrefs.setInstance();
-    get_ts(_url);
+    _start();
     //codeItems = SharePrefs.getCodeItems();
     //stockItems = SharePrefs.getStockItems();
     //valueItems = SharePrefs.getValueItems();
@@ -69,19 +81,85 @@ class _MyHomePageState extends State<MyHomePage> {
   void _incrementCounter() {
     setState(() {
       _counter++;
-      get_ts(_url);
     });
   }
 
-  Future get_ts(url) async {
+ 
+
+  //tsリンクが得られる,パラメータurlは.m3u8リンクである
+  Future get_ts(_url) async {
+    var path = "C://Clone_Videos"; // 既定のビデオ保存パス
+
+    var all_url = _url.split('/');   //split は '/' に基づいて文字列をリストに分割します
+    
+    var url_pre = all_url.join('path', 'to', 'foo'); // -> 'path/to/foo'
+    //var url_pre = '/'.join(all_url[-1]) + '/'; // 最後の項目を破棄し、新しい URL にステッチします
+    
+    var url_next = all_url[-1]; //リストall_url末尾にある項目を取得します
+
+    //requests.get() 関数は requests.models.Response オブジェクトを返します
+    //var m3u8_txt = requests.get(_url, headers={'Connection': 'close'}, verify=False);
+    var m3u8_txt = await HttpClient().getUrl(Uri.parse(_url));
+    var m3u8response = await m3u8_txt.close();
+    var responseBodyText = await utf8.decodeStream(m3u8response);
+    print(responseBodyText);
+
+    var m3u8_content = File(url_next);  //m3u8ファイルを作成し、
+    m3u8_content.writeAsBytes(m3u8_txt.content); //m3u8_txt.content はバイト ストリームです 
+
+    //with open(url_next, 'wb') as m3u8_content:;  //m3u8ファイルを作成し、
+    //    var m3u8_content.write(m3u8_txt.content);  //m3u8_txt.content はバイト ストリームです
+
+    var movies = [];  // 取得した完全な .ts ビデオ リンクを格納するリストを作成します
+
+    var urls = File(url_next);
+    for (String line in urls.readAsLines()){
+        line2 = line.decode();						// bytes -> str
+        if ('.ts' in line2){  // 抽出.tsファイルのリンク
+            // 完全な .ts ネットワーク リンクにステッチされ、movies リストに保存され、line2[:-1] は末尾の改行を削除します
+            movies.append(url_pre + line2[:-1]);
+        }    
+        else{
+            continue;
+        }    
+    }        
+    urls.close();  // 閉じます
+    return movies;  // 一覧に戻ります
+
+  }
+
+
+
+
+
+  void _start()async{
+     var movie_all = [];
+
+
+    var _url = 'https://d.ossrs.net:8088/live/livestream.m3u8'; //# input("请输入.m3u8链接：")
+    var movie_name = 'sample'; // input("input to VideoName")
+    
+    movie_all = await get_ts(_url);
+   // var num = down_ts(movie_all);
+   // merge_ts(num)
+   // change_mp4(movie_name)
+    //del_ts(num)
+
+
+    
+
+  }
+
+
+/*
     //http.Response response
     //var response = await http.readBytes(
     //  _url,
     //);
 
-     // make GET request
-  String url = 'https://jsonplaceholder.typicode.com/posts';
-  http.Response response1 = await http.get(url);
+    // make GET request
+    String url = 'https://jsonplaceholder.typicode.com/posts';
+    http.Response response1 = await http.get(url);
 
     //const download_path = os.getcwd() + "\download";//downloadパスの取得
     //const download_path = await getDownloadsDirectory();
@@ -147,7 +225,17 @@ class _MyHomePageState extends State<MyHomePage> {
 
     //with open(url_next, 'wb') as m3u8_content: //m3u8 ファイル(m3u8_content)を新規作成します
     //m3u8_content.write(m3u8_txt.content); //m3u8_txt.content はバイト ストリームです
-  }
+
+    
+
+
+}
+
+*/
+
+
+
+ 
 
   @override
   Widget build(BuildContext context) {
