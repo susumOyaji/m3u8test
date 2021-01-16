@@ -74,23 +74,23 @@ class _MyHomePageState extends State<MyHomePage> {
     Directory tempDir = await getTemporaryDirectory();
     String tempPath = tempDir.path;
 
-    List all_url = _url.split('/'); //split は '/' に基づいて文字列をリストに分割します
+    var all_url = _url.split('/'); //split は '/' に基づいて文字列をリストに分割します
 
-    int del = all_url.length;
-    all_url[del] = '';
-    print(all_url);
-    List url_pre = all_url;
+    //int del = all_url.length;
+    //all_url[del] = '';
+    //print(all_url);
+    var url_pre = all_url;
     //var url_pre = '/'.join(all_url[-1]) + '/'; // 最後の項目を破棄し、新しい URL にステッチします
 
-    var url_next = all_url[all_url.length]; //リストall_url末尾にある項目を取得します
+    var url_next = all_url[5]; //リストall_url末尾にある項目を取得します,*.m3u8ファイル名を取得
 
     //requests.get() 関数は requests.models.Response オブジェクトを返します
     //var m3u8_txt = requests.get(_url, headers={'Connection': 'close'}, verify=False);
-    var m3u8_txt = await http.get(_url);
+    var m3u8_txt = await http.get(_url); //livestream.m3u8ファイルをバイト書込みモードで作成する。
     //var m3u8_content = File(url_next);  //m3u8ファイルを作成し、
 
     //レスポンスボディをバイナリ形式で取得.
-    //m3u8_content.writeAsBytes(m3u8_txt.bodyBytes); //m3u8_txt.content はバイト ストリームです
+    //m3u8_content.writeAsBytes(m3u8_txt.bodyBytes); //ivestream.m3u8にm3u8.txtのcontentを書込む（）
 
     //with open(url_next, 'wb') as m3u8_content:;  //m3u8ファイルを作成し、
     //    var m3u8_content.write(m3u8_txt.content);  //m3u8_txt.content はバイト ストリームです
@@ -101,7 +101,7 @@ class _MyHomePageState extends State<MyHomePage> {
     final file = await script.open(mode: FileMode.read);
     var m3u8_content = await file.readByte();
 
-    //var urls = m3u8_content.readByte();
+    //var urls = m3u8_content.readByte();//ivestream.m3u8ファイルをバイト読込モードで開く。
     //for (http.ByteStream line in m3u8_content){
     //    String line2 = utf8.decode(line);						// bytes -> str
     //    if ('.ts' in line2){  // 抽出.tsファイルのリンク
