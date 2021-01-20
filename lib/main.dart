@@ -48,17 +48,24 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
-  //var _url = 'https://d.ossrs.net:8088/live/livestream.m3u8';
+  List<String> codeItems = []; //codekey
+  List<String> stockItems = []; //stock
+  List<String> valueItems = []; //value
+  List<String> income = []; //損益
+  List<String> stdcodeItems = ['998407.O', '^DJI']; //Nikkei And Dw
+
+  List<String> acquiredAssetsItems = []; //取得資産 stock x value
+  List<String> valuableAssetsItems = []; //評価資産 stock X presentvalue
 
   @override
   void initState() {
     SharePrefs.setInstance();
     _start();
-    //codeItems = SharePrefs.getCodeItems();
-    //stockItems = SharePrefs.getStockItems();
-    //valueItems = SharePrefs.getValueItems();
-    //acquiredAssetsItems = SharePrefs.getacquiredAssetsItems(); //取得資産
-    //valuableAssetsItems = SharePrefs.getvaluableAssetsItems();
+    codeItems = SharePrefs.getCodeItems();
+    stockItems = SharePrefs.getStockItems();
+    valueItems = SharePrefs.getValueItems();
+    acquiredAssetsItems = SharePrefs.getacquiredAssetsItems(); //取得資産
+    valuableAssetsItems = SharePrefs.getvaluableAssetsItems();
     super.initState();
   }
 
@@ -74,20 +81,21 @@ class _MyHomePageState extends State<MyHomePage> {
     Directory tempDir = await getTemporaryDirectory();
     String tempPath = tempDir.path;
 
-    var all_url = _url.split('/'); //split は '/' に基づいて文字列をリストに分割します
-
-    //int del = all_url.length;
-    //all_url[del] = '';
-    //print(all_url);
-    var url_pre = all_url;
-    //var url_pre = '/'.join(all_url[-1]) + '/'; // 最後の項目を破棄し、新しい URL にステッチします
-
-    var url_next = all_url[5]; //リストall_url末尾にある項目を取得します,*.m3u8ファイル名を取得
+    List<String> all_url = _url.split('/'); //split は '/' に基づいて文字列をリストに分割します
+    var url_next =
+        all_url.removeLast(); //リストall_url末尾にある項目を取得します,*.m3u8ファイル名を取得
+    var url_pre =
+        all_url.join('/') + '/'; // 最後の項目を破棄し、新しい URL にステッチします,splitを元になる戻す
 
     //requests.get() 関数は requests.models.Response オブジェクトを返します
     //var m3u8_txt = requests.get(_url, headers={'Connection': 'close'}, verify=False);
-    var m3u8_txt = await http.get(_url); //livestream.m3u8ファイルをバイト書込みモードで作成する。
+    var m3u8_txt = http.read(_url); // livestream.m3u8データ取得
+
+    //livestream.m3u8ファイルをバイト書込みモードで作成する。
     //var m3u8_content = File(url_next);  //m3u8ファイルを作成し、
+    final file = new File(url_next);
+    IOSink m3u8_content = file.openWrite({FileMode.write, encoding: utf8});
+    m3u8_content.writeAsString(m3u8_txt.content, mode: FileMode.append);
 
     //レスポンスボディをバイナリ形式で取得.
     //m3u8_content.writeAsBytes(m3u8_txt.bodyBytes); //ivestream.m3u8にm3u8.txtのcontentを書込む（）
@@ -97,9 +105,9 @@ class _MyHomePageState extends State<MyHomePage> {
 
     var movies = []; // 取得した完全な .ts ビデオ リンクを格納するリストを作成します
 
-    final script = File(url_next);
-    final file = await script.open(mode: FileMode.read);
-    var m3u8_content = await file.readByte();
+    //final script = File(url_next);
+    //file = await script.open(mode: FileMode.read);
+    //var m3u8_content = await file.readByte();
 
     //var urls = m3u8_content.readByte();//ivestream.m3u8ファイルをバイト読込モードで開く。
     //for (http.ByteStream line in m3u8_content){
