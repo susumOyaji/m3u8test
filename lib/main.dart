@@ -127,7 +127,47 @@ class _MyHomePageState extends State<MyHomePage> {
 
     //requests.get() 関数は requests.models.Response オブジェクトを返します
     //var m3u8_txt = requests.get(_url, headers={'Connection': 'close'}, verify=False);
-    var m3u8_txt = http.read(_url); // livestream.m3u8データ取得
+    //var m3u8_txt = http.read(_url); // livestream.m3u8データ取得
+    HttpClient client = new HttpClient();
+    client.getUrl(Uri.parse(_url)).then((HttpClientRequest request) {
+      // Optionally set up headers...
+      // Optionally write to the request object...
+      // Then call close.
+      //  ...
+      return request.close();
+    }).then((HttpClientResponse response) {
+      // Process the response.
+      //...
+    });
+
+    ///////import 'dart:io';
+
+    void main(List<String> arguments) {
+      readFileByteByByte().then((done) {
+        print('done');
+      });
+      print('waiting...');
+      print('do something else while waiting...');
+    }
+
+    Future<bool> readFileByteByByte() async {
+      //final fileName = 'C:\\code\\test\\file_test\\bin\\main.dart'; // use your image file name here
+      final fileName = Platform.script
+          .toFilePath(); //this will read this text file as an example
+      final script = File(fileName);
+      final file = await script.open(mode: FileMode.read);
+
+      var byte;
+      while (byte != -1) {
+        byte = await file.readByte();
+        if (byte == ';'.codeUnitAt(0)) {
+          //check if byte is semicolon
+          print(byte);
+        }
+      }
+      await file.close();
+      return (true);
+    }
 
     Directory tempDir = await getTemporaryDirectory();
     String tempPath = tempDir.path;
@@ -139,7 +179,7 @@ class _MyHomePageState extends State<MyHomePage> {
     //livestream.m3u8ファイルをバイト書込みモードで作成する。
 
     var m3u8_content = File(url_next); //m3u8ファイルを作成し、
-    m3u8_content.writeAsBytes(m3u8_txt.content, mode: FileMode.append);
+    //m3u8_content.writeAsBytes(m3u8_txt.content, mode: FileMode.append);
 
     //Future<String> get _localPath async {
     //CounterStorage.readCounter();
@@ -173,11 +213,6 @@ class _MyHomePageState extends State<MyHomePage> {
     //}
     //urls.close();  // 閉じます
     return movies; // 一覧に戻ります
-  }
-
-  Future<String> get _localPath async {
-    final directory = await getApplicationDocumentsDirectory();
-    return directory.path;
   }
 
   void _start() async {
