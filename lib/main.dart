@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
 import 'shared_prefs.dart';
+import 'CounterStorage.dart';
 
 void main() {
   runApp(MyApp());
@@ -41,6 +42,7 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   MyHomePage({Key key, this.title}) : super(key: key);
   final String title;
+  //CounterStorage storage;
 
   @override
   _MyHomePageState createState() => _MyHomePageState();
@@ -48,6 +50,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
+
   List<String> codeItems = []; //codekey
   List<String> stockItems = []; //stock
   List<String> valueItems = []; //value
@@ -60,6 +63,7 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     SharePrefs.setInstance();
+
     _start();
     codeItems = SharePrefs.getCodeItems();
     stockItems = SharePrefs.getStockItems();
@@ -75,11 +79,45 @@ class _MyHomePageState extends State<MyHomePage> {
     });
   }
 
+  //デバイスのディレクトリパスの取得
+  Future<String> get _localPath async {
+    final directory = await getApplicationDocumentsDirectory();
+    return directory.path;
+  }
+
+  //デバイスのディレクトリパスの取得
+  Future<String> get _temporaryPath async {
+    final directory = await getTemporaryDirectory();
+    return directory.path;
+  }
+
+  //ローカルファイルオブジェクトの取得
+  Future<File> get _localFile async {
+    final path = await _localPath;
+    return File('$path/counter.txt');
+  }
+
+  //テンポラリファイルオブジェクトの取得
+  Future<File> get _temporaryFile async {
+    final path = await _temporaryPath;
+    return File('$path/counter.txt');
+  }
+
+  Future<File> writeCounter(int counter) async {
+    final file = await _localFile;
+
+    // Write the file
+    return file.writeAsString('$counter');
+  }
+
+  Future<File> witeByteCounter(List<int> byte) async {
+    final file = await _temporaryFile;
+    return file.writeAsBytes(byte);
+  }
+
   //tsリンクが得られる,パラメータurlは.m3u8リンクである
   Future get_ts(_url) async {
     var path = "C://Clone_Videos"; // 既定のビデオ保存パス
-    Directory tempDir = await getTemporaryDirectory();
-    String tempPath = tempDir.path;
 
     List<String> all_url = _url.split('/'); //split は '/' に基づいて文字列をリストに分割します
     var url_next =
@@ -91,11 +129,24 @@ class _MyHomePageState extends State<MyHomePage> {
     //var m3u8_txt = requests.get(_url, headers={'Connection': 'close'}, verify=False);
     var m3u8_txt = http.read(_url); // livestream.m3u8データ取得
 
+    Directory tempDir = await getTemporaryDirectory();
+    String tempPath = tempDir.path;
+    print(tempPath);
+
+    Directory appDocDir = await getApplicationDocumentsDirectory();
+    String appDocPath = appDocDir.path;
+    print(appDocPath);
     //livestream.m3u8ファイルをバイト書込みモードで作成する。
-    //var m3u8_content = File(url_next);  //m3u8ファイルを作成し、
-    final file = new File(url_next);
-    IOSink m3u8_content = file.openWrite({FileMode.write, encoding: utf8});
-    m3u8_content.writeAsString(m3u8_txt.content, mode: FileMode.append);
+
+    var m3u8_content = File(url_next); //m3u8ファイルを作成し、
+    m3u8_content.writeAsBytes(m3u8_txt.content, mode: FileMode.append);
+
+    //Future<String> get _localPath async {
+    //CounterStorage.readCounter();
+    //CounterStorage.writeCounter(1);
+
+    //return directory.path;
+    //}
 
     //レスポンスボディをバイナリ形式で取得.
     //m3u8_content.writeAsBytes(m3u8_txt.bodyBytes); //ivestream.m3u8にm3u8.txtのcontentを書込む（）
@@ -124,6 +175,11 @@ class _MyHomePageState extends State<MyHomePage> {
     return movies; // 一覧に戻ります
   }
 
+  Future<String> get _localPath async {
+    final directory = await getApplicationDocumentsDirectory();
+    return directory.path;
+  }
+
   void _start() async {
     var movie_all = [];
 
@@ -132,6 +188,7 @@ class _MyHomePageState extends State<MyHomePage> {
     var movie_name = 'sample'; // input("input to VideoName")
 
     movie_all = await get_ts(_url);
+
     // var num = down_ts(movie_all);
     // merge_ts(num)
     // change_mp4(movie_name)
