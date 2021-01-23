@@ -1,6 +1,6 @@
 import 'dart:async';
 import 'dart:io';
-import 'dart:convert';
+import 'dart:convert' as convert;
 import 'package:flutter/material.dart';
 
 import 'package:http/http.dart' as http;
@@ -115,42 +115,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return file.writeAsBytes(byte);
   }
 
-  //tsリンクが得られる,パラメータurlは.m3u8リンクである
-  Future get_ts(_url) async {
-    var path = "C://Clone_Videos"; // 既定のビデオ保存パス
-
-    List<String> all_url = _url.split('/'); //split は '/' に基づいて文字列をリストに分割します
-    var url_next =
-        all_url.removeLast(); //リストall_url末尾にある項目を取得します,*.m3u8ファイル名を取得
-    var url_pre =
-        all_url.join('/') + '/'; // 最後の項目を破棄し、新しい URL にステッチします,splitを元になる戻す
-
-    //requests.get() 関数は requests.models.Response オブジェクトを返します
-    //var m3u8_txt = requests.get(_url, headers={'Connection': 'close'}, verify=False);
-    //var m3u8_txt = http.read(_url); // livestream.m3u8データ取得
-    HttpClient client = new HttpClient();
-    client.getUrl(Uri.parse(_url)).then((HttpClientRequest request) {
-      // Optionally set up headers...
-      // Optionally write to the request object...
-      // Then call close.
-      //  ...
-      return request.close();
-    }).then((HttpClientResponse response) {
-      // Process the response.
-      //...
-    });
-
-    ///////import 'dart:io';
-
-    void main(List<String> arguments) {
-      readFileByteByByte().then((done) {
-        print('done');
-      });
-      print('waiting...');
-      print('do something else while waiting...');
-    }
-
-    Future<bool> readFileByteByByte() async {
+  Future<bool> readFileByteByByte() async {
       //final fileName = 'C:\\code\\test\\file_test\\bin\\main.dart'; // use your image file name here
       final fileName = Platform.script
           .toFilePath(); //this will read this text file as an example
@@ -168,6 +133,55 @@ class _MyHomePageState extends State<MyHomePage> {
       await file.close();
       return (true);
     }
+
+
+
+
+
+
+
+
+
+  //tsリンクが得られる,パラメータurlは.m3u8リンクである
+  Future get_ts(_url) async {
+    var path = "C://Clone_Videos"; // 既定のビデオ保存パス
+
+    List<String> all_url = _url.split('/'); //split は '/' に基づいて文字列をリストに分割します
+    var url_next =
+        all_url.removeLast(); //リストall_url末尾にある項目を取得します,*.m3u8ファイル名を取得
+    var url_pre =
+        all_url.join('/') + '/'; // 最後の項目を破棄し、新しい URL にステッチします,splitを元になる戻す
+
+    
+    
+    
+    
+    //Requests とは Python の 今風な HTTP ライブラリである.
+    //requests.get('URL') で GET リクエストができる.
+    //レスポンスに対して .text とすることで, レスポンスボディをテキスト形式で取得できる.
+    //content=レスポンスボディをバイナリ形式で取得.
+
+
+
+
+
+
+    //requests.get() 関数は requests.models.Response オブジェクトを返します
+    //var m3u8_txt = requests.get(_url, headers={'Connection': 'close'}, verify=False);
+    //var m3u8_txt = http.read(_url); // livestream.m3u8データ取得
+    // Await the http get response, then decode the json-formatted response.
+    var response = await http.get(_url);
+    if (response.statusCode == 200) {
+      var jsonResponse = convert.jsonDecode(response.body);
+      var itemCount = jsonResponse['totalItems'];
+      print('Number of books about http: $itemCount.');
+    } else {
+      print('Request failed with status: ${response.statusCode}.');
+    }
+
+    
+
+    
 
     Directory tempDir = await getTemporaryDirectory();
     String tempPath = tempDir.path;
