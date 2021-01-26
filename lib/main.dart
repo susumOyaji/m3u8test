@@ -53,25 +53,12 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   int _counter = 0;
 
-  List<String> codeItems = []; //codekey
-  List<String> stockItems = []; //stock
-  List<String> valueItems = []; //value
-  List<String> income = []; //損益
-  List<String> stdcodeItems = ['998407.O', '^DJI']; //Nikkei And Dw
-
-  List<String> acquiredAssetsItems = []; //取得資産 stock x value
-  List<String> valuableAssetsItems = []; //評価資産 stock X presentvalue
-
   @override
   void initState() {
     SharePrefs.setInstance();
 
     _start();
-    codeItems = SharePrefs.getCodeItems();
-    stockItems = SharePrefs.getStockItems();
-    valueItems = SharePrefs.getValueItems();
-    acquiredAssetsItems = SharePrefs.getacquiredAssetsItems(); //取得資産
-    valuableAssetsItems = SharePrefs.getvaluableAssetsItems();
+
     super.initState();
   }
 
@@ -136,7 +123,7 @@ class _MyHomePageState extends State<MyHomePage> {
     //void downloadByHttp() async {
     var file = new File("Http_Download.mp3");
     var client = http.Client();
-    var request = http.Request("GET", _url);
+    var request = http.Request("GET", url_next);
     var response = await client.send(request);
     var sink = file.openWrite();
     await response.stream.pipe(sink);
@@ -217,7 +204,7 @@ class _MyHomePageState extends State<MyHomePage> {
     //var _url = 'http://m3u8.test.com/test.m3u8';
     var movie_name = 'sample'; // input("input to VideoName")
 
-    movie_all = await get_ts();
+    await get_ts();
 
     // var num = down_ts(movie_all);
     // merge_ts(num)
