@@ -102,7 +102,8 @@ def del_ts(num):
 
 # メイン関数コードを次に示します。
 if __name__ == "__main__":
-    url = 'https://d.ossrs.net:8088/live/livestream.m3u8'# input("请输入.m3u8链接：")
+    #url = 'https://d.ossrs.net:8088/live/livestream.m3u8'# input("请输入.m3u8链接：")
+    url = 'http://m3u8.test.com/test.m3u8'
     movie_name = 'sample'  # input("input to VideoName")
     movie_all = []
     movie_all = get_ts(url)

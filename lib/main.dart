@@ -118,10 +118,11 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 
   //tsリンクが得られる,パラメータurlは.m3u8リンクである
-  Future get_ts(_url) async {
+  Future get_ts() async {
     var path = "C://Clone_Videos"; // 既定のビデオ保存パス
-
-    List<String> all_url = _url.split('/'); //split は '/' に基づいて文字列をリストに分割します
+    var _url = Uri.parse('https://d.ossrs.net:8088/live/livestream.m3u8');
+    var url_ = _url.toString();
+    List<String> all_url = url_.split('/'); //split は '/' に基づいて文字列をリストに分割します
     var url_next =
         all_url.removeLast(); //リストall_url末尾にある項目を取得します,*.m3u8ファイル名を取得
     var url_pre =
@@ -131,32 +132,16 @@ class _MyHomePageState extends State<MyHomePage> {
     //var m3u8_txt = requests.get(_url, headers={'Connection': 'close'}, verify=False);
     //var m3u8_txt = http.read(_url); // livestream.m3u8データ取得
     //'https://d.ossrs.net:8088/live/livestream.m3u8'
-    var url_ =
-        "https://stocks.finance.yahoo.co.jp/stocks/detail/?code=" + '6758';
-    final response = await http.get(url_); //^DJI
-    final String json = response.body;
 
-    if (await canLaunch(_url)) {
-      await launch(
-        _url,
-        forceSafariVC: true,
-        enableJavaScript: true,
-      );
-    } else {
-      throw 'Could not launch $_url';
-    }
-
-    HttpClient client = new HttpClient();
-    client.getUrl(Uri.parse(_url)).then((HttpClientRequest request) {
-      // Optionally set up headers...
-      // Optionally write to the request object...
-      // Then call close.
-      //  ...
-      return request.close();
-    }).then((HttpClientResponse response) {
-      // Process the response.
-      //...
-    });
+    //void downloadByHttp() async {
+    var file = new File("Http_Download.mp3");
+    var client = http.Client();
+    var request = http.Request("GET", _url);
+    var response = await client.send(request);
+    var sink = file.openWrite();
+    await response.stream.pipe(sink);
+    sink.close();
+//}
 
     Future<bool> readFileByteByByte() async {
       //final fileName = 'C:\\code\\test\\file_test\\bin\\main.dart'; // use your image file name here
@@ -228,9 +213,11 @@ class _MyHomePageState extends State<MyHomePage> {
 
     var _url =
         'https://d.ossrs.net:8088/live/livestream.m3u8'; //# input("请输入.m3u8链接：")
+
+    //var _url = 'http://m3u8.test.com/test.m3u8';
     var movie_name = 'sample'; // input("input to VideoName")
 
-    movie_all = await get_ts(_url);
+    movie_all = await get_ts();
 
     // var num = down_ts(movie_all);
     // merge_ts(num)
