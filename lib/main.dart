@@ -5,10 +5,10 @@ import 'package:flutter/material.dart';
 
 import 'package:http/http.dart' as http;
 import 'package:path_provider/path_provider.dart';
-import 'shared_prefs.dart';
+//import 'shared_prefs.dart';
 import 'CounterStorage.dart';
-import 'package:open_url/open_url.dart';
-import 'package:url_launcher/url_launcher.dart';
+//import 'package:open_url/open_url.dart';
+//import 'package:url_launcher/url_launcher.dart';
 
 void main() {
   runApp(MyApp());
@@ -55,8 +55,6 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
-    SharePrefs.setInstance();
-
     _start();
 
     super.initState();
@@ -121,13 +119,24 @@ class _MyHomePageState extends State<MyHomePage> {
     //'https://d.ossrs.net:8088/live/livestream.m3u8'
 
     //void downloadByHttp() async {
-    var file = new File("Http_Download.mp3");
-    var client = http.Client();
-    var request = http.Request("GET", url_next);
-    var response = await client.send(request);
-    var sink = file.openWrite();
-    await response.stream.pipe(sink);
-    sink.close();
+    final url = Uri.parse('https://google.com/');
+
+    final response =
+        new HttpClient().getUrl(_url);
+    final stream = response.asStream();
+    //await for (var data in stream) {
+      print(response.toString());
+    //}
+    print(response);
+
+    final client = http.Client();
+    final request = http.Request('GET', _url);
+    //final response = await client.send(request);
+    //final stream = response.stream;
+    await for (var data in stream) {
+      //print(data.length);
+    }
+    client.close();
 //}
 
     Future<bool> readFileByteByByte() async {
