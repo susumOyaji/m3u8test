@@ -119,25 +119,26 @@ class _MyHomePageState extends State<MyHomePage> {
     //'https://d.ossrs.net:8088/live/livestream.m3u8'
 
     //void downloadByHttp() async {
-    final url = Uri.parse('https://google.com/');
-
-    final response =
-        new HttpClient().getUrl(_url);
-    final stream = response.asStream();
-    //await for (var data in stream) {
-      print(response.toString());
-    //}
-    print(response);
-
-    final client = http.Client();
-    final request = http.Request('GET', _url);
-    //final response = await client.send(request);
-    //final stream = response.stream;
-    await for (var data in stream) {
-      //print(data.length);
-    }
-    client.close();
+   
 //}
+
+//    main() async {
+  String uurl = 'https://pae.ipportalegre.pt/testes2/wsjson/api/app/ws-authenticate';
+  Map map = {
+       'data': {'apikey': '12345678901234567890'},
+  };
+
+  print(await apiRequest(uurl, map));
+ //}
+
+ 
+
+
+
+
+
+
+
 
     Future<bool> readFileByteByByte() async {
       //final fileName = 'C:\\code\\test\\file_test\\bin\\main.dart'; // use your image file name here
@@ -203,6 +204,23 @@ class _MyHomePageState extends State<MyHomePage> {
     //urls.close();  // 閉じます
     return movies; // 一覧に戻ります
   }
+
+  Future<String> apiRequest(String url, Map jsonMap) async {
+     HttpClient httpClient = new HttpClient();
+     HttpClientRequest request = await httpClient.postUrl(Uri.parse(url));
+     request.headers.set('content-type', 'application/json');
+     request.add(utf8.encode(json.encode(jsonMap)));
+     HttpClientResponse response = await request.close();
+  // todo - you should check the response.statusCode
+     String reply = await response.transform(utf8.decoder).join();
+     httpClient.close();
+     return reply;
+ }
+
+
+
+
+
 
   void _start() async {
     var movie_all = [];
