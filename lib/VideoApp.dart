@@ -54,6 +54,7 @@ class _VideoAppState extends State<VideoApp> {
     _controller.dispose();
   }
 }
+/*
 and chrome console getting following error
 Error: Expected a value of type 'PlatformException', but got one of type 'Event$'
     at Object.throw_ [as throw] (errors.dart:196)
@@ -70,3 +71,4 @@ Error: Expected a value of type 'PlatformException', but got one of type 'Event$
     at Object._microtaskLoop (schedule_microtask.dart:43)
     at _startMicrotaskLoop (schedule_microtask.dart:52)
     at async_patch.dart:168
+*/    
