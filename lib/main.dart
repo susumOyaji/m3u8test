@@ -124,6 +124,13 @@ class _MyHomePageState extends State<MyHomePage> {
 
 //}
 
+    var response = await http.Client()
+        .get(Uri.parse(url), headers: {'User-Agent': userAgent});
+    var decoded_body_byte = Utf8Decoder(allowMalformed: true)
+        .convert(response.bodyBytes); // charset_converter: ^1.0.3
+    print(
+        "decoded_body_byte : ${decoded_body_byte}"); // decoded_body_byte: nullとなる
+
     Map<String, String> headers = new HashMap();
     headers['Accept'] = 'application/json';
     headers['Content-type'] = 'application/json';
