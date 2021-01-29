@@ -16,18 +16,21 @@ def get_ts(url):
 
     # requests.get()函数返回的是requests.models.Response对象
     m3u8_txt = requests.get(url, headers={'Connection': 'close'}, verify=False)
+    #ファイルを開ける　→　as ファイルを呼び出すための変数（略称）
     with open(url_next, 'wb') as m3u8_content:  # m3u8ファイルを作成し、
         m3u8_content.write(m3u8_txt.content)  # m3u8_txt.content はバイト ストリームです
 
     movies = []  # 取得した完全な .ts ビデオ リンクを格納するリストを作成します
 
-    urls = open(url_next, 'rb')
+    urls = open(url_next, 'rb')#
     for line in urls.readlines():
+        print('readlines?',urls.readlines())
+
         line2 = line.decode()						# bytes -> str
         if '.ts' in line2:  # 抽出.tsファイルのリンク
             # 完全な .ts ネットワーク リンクにステッチされ、movies リストに保存され、line2[:-1] は末尾の改行を削除します
             movies.append(url_pre + line2[:-1])
-            print(movies)
+            print('movies.append',movies)
         else:
             continue
     urls.close()  # 閉じます
@@ -102,8 +105,8 @@ def del_ts(num):
 
 # メイン関数コードを次に示します。
 if __name__ == "__main__":
-    #url = 'https://d.ossrs.net:8088/live/livestream.m3u8'# input("请输入.m3u8链接：")
-    url = 'http://m3u8.test.com/test.m3u8'
+    url = 'https://d.ossrs.net:8088/live/livestream.m3u8'# input("请输入.m3u8链接：")
+    #url = 'http://m3u8.test.com/test.m3u8'
     movie_name = 'sample'  # input("input to VideoName")
     movie_all = []
     movie_all = get_ts(url)
