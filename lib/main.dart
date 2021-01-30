@@ -109,14 +109,6 @@ class _MyHomePageState extends State<MyHomePage> {
   Future get_ts(url) async {
     //var path = "C://Clone_Videos"; // 既定のビデオ保存パス
     //var _url = Uri.parse('https://d.ossrs.net:8088/live/livestream.m3u8');
-    var _url = await HttpClient().getUrl(Uri.parse(url));
-    var response = await _url.close();
-    var m3u8_txt = await utf8.decodeStream(response);
-    print(m3u8_txt);
-
-
-
-
     //var url_ = _url.toString();
     List<String> all_url = url.split('/'); //split は '/' に基づいて文字列をリストに分割します
     var url_next =
@@ -124,16 +116,15 @@ class _MyHomePageState extends State<MyHomePage> {
     var url_pre =
         all_url.join('/') + '/'; // 最後の項目を破棄し、新しい URL にステッチします,splitを元になる戻す
 
-    //requests.get() 関数は requests.models.Response オブジェクトを返します
-    //var m3u8_txt = requests.get(_url, headers={'Connection': 'close'}, verify=False);
-    //var m3u8_txt = http.read(_url); // livestream.m3u8データ取得
-    //'https://d.ossrs.net:8088/live/livestream.m3u8'
+    var _url = await HttpClient().getUrl(Uri.parse(url));
+    var response = await _url.close();
+    var m3u8_txt = await utf8.decodeStream(response);
+    print(m3u8_txt);
 
-    //void downloadByHttp() async {
-
-//}
-
-   
+    final m3u8_path = Platform.script.toFilePath();
+    final script = File(m3u8_path);
+    final m3u8_content = await script.open(mode: FileMode.write);
+  
 
     Future<bool> readFileByteByByte() async {
       //final fileName = 'C:\\code\\test\\file_test\\bin\\main.dart'; // use your image file name here
@@ -163,7 +154,7 @@ class _MyHomePageState extends State<MyHomePage> {
     print(appDocPath);
     //livestream.m3u8ファイルをバイト書込みモードで作成する。
 
-    var m3u8_content = File(url_next); //m3u8ファイルを作成し、
+    //var m3u8_content = File(url_next); //m3u8ファイルを作成し、
     //m3u8_content.writeAsBytes(m3u8_txt.content, mode: FileMode.append);
 
     //Future<String> get _localPath async {
@@ -225,7 +216,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
     var _url3 =
         'https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8';
-   
+
     var _url4 = 'http://www.streambox.fr/playlists/test_001/stream.m3u8';
 
     var _url5 =
