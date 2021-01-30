@@ -111,8 +111,8 @@ class _MyHomePageState extends State<MyHomePage> {
     //var _url = Uri.parse('https://d.ossrs.net:8088/live/livestream.m3u8');
     var _url = await HttpClient().getUrl(Uri.parse(url));
     var response = await _url.close();
-    var responseBodyText = await utf8.decodeStream(response);
-    print(responseBodyText);
+    var m3u8_txt = await utf8.decodeStream(response);
+    print(m3u8_txt);
 
 
 
