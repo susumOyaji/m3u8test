@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'dart:collection';
 import 'package:path_provider/path_provider.dart';
+//import 'dart:html';
 
 //import 'shared_prefs.dart';
 import 'CounterStorage.dart';
@@ -106,10 +107,18 @@ class _MyHomePageState extends State<MyHomePage> {
 
   //tsリンクが得られる,パラメータurlは.m3u8リンクである
   Future get_ts(url) async {
-    var path = "C://Clone_Videos"; // 既定のビデオ保存パス
-    var _url = Uri.parse('https://d.ossrs.net:8088/live/livestream.m3u8');
-    var url_ = _url.toString();
-    List<String> all_url = url_.split('/'); //split は '/' に基づいて文字列をリストに分割します
+    //var path = "C://Clone_Videos"; // 既定のビデオ保存パス
+    //var _url = Uri.parse('https://d.ossrs.net:8088/live/livestream.m3u8');
+    var _url = await HttpClient().getUrl(Uri.parse(url));
+    var response = await _url.close();
+    var responseBodyText = await utf8.decodeStream(response);
+    print(responseBodyText);
+
+
+
+
+    //var url_ = _url.toString();
+    List<String> all_url = url.split('/'); //split は '/' に基づいて文字列をリストに分割します
     var url_next =
         all_url.removeLast(); //リストall_url末尾にある項目を取得します,*.m3u8ファイル名を取得
     var url_pre =
@@ -124,33 +133,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
 //}
 
-    var response = await http.Client()
-        .get(Uri.parse(url), headers: {'User-Agent': userAgent});
-    var decoded_body_byte = Utf8Decoder(allowMalformed: true)
-        .convert(response.bodyBytes); // charset_converter: ^1.0.3
-    print(
-        "decoded_body_byte : ${decoded_body_byte}"); // decoded_body_byte: nullとなる
-
-    Map<String, String> headers = new HashMap();
-    headers['Accept'] = 'application/json';
-    headers['Content-type'] = 'application/json';
-
-    var response = await http.readBytes(url);
-    //"https://stocks.finance.yahoo.co.jp/stocks/detail/?code=" +
-    //    '658'); //^DJI
-    final String json = response.toString();
-    // Extract String from Streamed Response
-    var responseString = await response.stream.bytesToString();
-
-//    main() async {
-    String uurl =
-        'https://pae.ipportalegre.pt/testes2/wsjson/api/app/ws-authenticate';
-    Map map = {
-      'data': {'apikey': '12345678901234567890'},
-    };
-
-    print(await apiRequest(uurl, map));
-    //}
+   
 
     Future<bool> readFileByteByByte() async {
       //final fileName = 'C:\\code\\test\\file_test\\bin\\main.dart'; // use your image file name here
@@ -235,10 +218,23 @@ class _MyHomePageState extends State<MyHomePage> {
     var _url =
         'https://d.ossrs.net:8088/live/livestream.m3u8'; //# input("请输入.m3u8链接：")
 
+    var _url1 =
+        'https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8';
+
+    var _url2 = 'https://mnmedias.api.telequebec.tv/m3u8/29880.m3u8';
+
+    var _url3 =
+        'https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8';
+   
+    var _url4 = 'http://www.streambox.fr/playlists/test_001/stream.m3u8';
+
+    var _url5 =
+        'https://pae.ipportalegre.pt/testes2/wsjson/api/app/ws-authenticate';
+
     //var _url = 'http://m3u8.test.com/test.m3u8';
     var movie_name = 'sample'; // input("input to VideoName")
 
-    await get_ts(_url);
+    await get_ts(_url3);
 
     // var num = down_ts(movie_all);
     // merge_ts(num)
