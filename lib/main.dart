@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 
 import 'package:http/http.dart' as http;
 import 'dart:collection';
+
+//アプリがファイルを保存可能な場所を取得するライブラリ
 import 'package:path_provider/path_provider.dart';
 //import 'dart:html';
 
@@ -108,6 +110,10 @@ class _MyHomePageState extends State<MyHomePage> {
   //tsリンクが得られる,パラメータurlは.m3u8リンクである
   Future get_ts(url) async {
     //var path = "C://Clone_Videos"; // 既定のビデオ保存パス
+    final m3u8_path = await getApplicationDocumentsDirectory();
+    var path = m3u8_path.path;
+    //Platform.script.toFilePath(); // 既定のビデオ保存パス
+
     //var _url = Uri.parse('https://d.ossrs.net:8088/live/livestream.m3u8');
     //var url_ = _url.toString();
     List<String> all_url = url.split('/'); //split は '/' に基づいて文字列をリストに分割します
@@ -121,10 +127,28 @@ class _MyHomePageState extends State<MyHomePage> {
     var m3u8_txt = await utf8.decodeStream(response);
     print(m3u8_txt);
 
-    final m3u8_path = Platform.script.toFilePath();
-    final script = File(m3u8_path);
-    final m3u8_content = await script.open(mode: FileMode.write);
-  
+    final File file = File('$path/' + url_next);
+    var m3u8_content = await file.open(mode: FileMode.write); //テキストファイルのパスを取得。
+    m3u8_content.writeString(m3u8_txt);
+
+    var movies = []; // 取得した完全な .ts ビデオ リンクを格納するリストを作成します
+
+    var urls = await file.open(mode: FileMode.read); //テキストファイルのパスを取得。
+    for (String line in urls.readlines()) {
+      print('readlines?', urls.readlines());
+      String line2 = line.decode();
+       if ('.ts' in line2:){  // 抽出.tsファイルのリンク
+          // 完全な .ts ネットワーク リンクにステッチされ、movies リストに保存され、line2[:-1] は末尾の改行を削除します
+            movies.append(url_pre + line2[:-1]);
+            print('movies.append',movies);
+       }
+        else{
+            continue;
+        }
+      urls.close();  // 閉じます
+      return movies; 
+
+    }
 
     Future<bool> readFileByteByByte() async {
       //final fileName = 'C:\\code\\test\\file_test\\bin\\main.dart'; // use your image file name here
