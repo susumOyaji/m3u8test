@@ -2,6 +2,7 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import 'package:http/http.dart' as http;
 import 'dart:collection';
@@ -15,6 +16,7 @@ import 'CounterStorage.dart';
 //import 'package:open_url/open_url.dart';
 //import 'package:url_launcher/url_launcher.dart';
 
+//void main() => runApp(MyApp());
 void main() {
   HttpOverrides.global = new MyHttpOverrides();
   runApp(MyApp());
@@ -160,41 +162,47 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     urls.close(); // 閉じます
     return movies; // 一覧に戻ります
-
   }
-
 
   //スライスダウンロード関数、引数moviesは.tsリンクです。
-  Future down_ts(movies){
+  Future down_ts(movies) async {
     //os.chdir(path)
     int i = 0;
+
     print("Downloaded中");
-    for (_url in movies){
-        movie_name = ("%03d.ts" % (i));  //ビデオクリップの名前とパス(_url.split('/')[-1][-6:])  # 接続で最後の 6 ビットをファイル名として抽出します。
-        error_get = [];  // エラーが発生したリンクを格納するリストを作成します。
-        try:
-            var movie = requests.get(_url, headers={'Connection': 'close'}, timeout=60,verify=False);  // .ts リンクを開きます
-            print('movie ${movie}');
-        except:
-            error_get.append(_url);
-            continue
-        print('movie_name ${movie_name}');
-        var movie_content = open('C://Reptile_video/' + movie_name, 'wb'); // ファイルをローカルに作成します
-        var movie_content.writelines(movie);  //スライスをダウンロードします
-        if (error_get){
-            down_ts(error_get);  // エラー一覧を再ダウンロードします
-        }else{
-            print("ダウンロードは成功しました。");
-            i = i+1;
+    for (var _url in movies) {
+      var movie_name = NumberFormat("000").format(i)+'.ts';//ビデオクリップの名前とパス(_url.split('/')[-1][-6:])  # 接続で最後の 6 ビットをファイル名として抽出します。
+      print(movie_name); // => 001
+      var error_get = []; // エラーが発生したリンクを格納するリストを作成します。
+      try {
+        //var movie = requests.get(_url, headers={'Connection': 'close'}, timeout=60,verify=False);  // .ts リンクを開きます
+        var movie = await HttpClient().getUrl(Uri.parse(_url));
+        var response = await _url.close();
+        //var m3u8_txt = await utf8.decodeStream(response);
+        print('movie ${movie}');
+      } catch (e) {
+        error_get.add(_url);
+      }
+      continue;
+      print('movie_name ${movie_name}');
+
+      //final File movie_name = File('$path/' + url_next);
+      //var movie_content = open('C://Reptile_video/' + movie_name, 'wb'); // ファイルをローカルに作成します
+      //var movie_content = await movie_name.open(mode: FileMode.write); //テキストファイルのパスを取得。
+      //movie_content.writelines(movie_name);  //スライスをダウンロードします
+      if (error_get[i]) {
+        down_ts(error_get[i]); // エラー一覧を再ダウンロードします
+      } else {
+        print("ダウンロードは成功しました。");
+        i = i + 1;
+      }
     }
-    }                    
     print("すべてのスライスのダウンロードが完了しました。");
-    num = len(movies);  // リスト要素の数を取得します
+    num N = movies.length; // リスト要素の数を取得します
 
-    return num;  //要素の数を返します
-
+    return N; //要素の数を返します
   }
-    /*
+  /*
     for (String line in urls.readlines()) {
       print('readlines?', urls.readlines());
       String line2 = line.decode();
@@ -212,64 +220,62 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     */
 
-    Future<bool> readFileByteByByte() async {
-      //final fileName = 'C:\\code\\test\\file_test\\bin\\main.dart'; // use your image file name here
-      final fileName = Platform.script
-          .toFilePath(); //this will read this text file as an example
-      final script = File(fileName);
-      final file = await script.open(mode: FileMode.read);
+  Future<bool> readFileByteByByte() async {
+    //final fileName = 'C:\\code\\test\\file_test\\bin\\main.dart'; // use your image file name here
+    final fileName = Platform.script
+        .toFilePath(); //this will read this text file as an example
+    final script = File(fileName);
+    final file = await script.open(mode: FileMode.read);
 
-      var byte;
-      while (byte != -1) {
-        byte = await file.readByte();
-        if (byte == ';'.codeUnitAt(0)) {
-          //check if byte is semicolon
-          print(byte);
-        }
+    var byte;
+    while (byte != -1) {
+      byte = await file.readByte();
+      if (byte == ';'.codeUnitAt(0)) {
+        //check if byte is semicolon
+        print(byte);
       }
-      await file.close();
-      return (true);
     }
+    await file.close();
+    return (true);
+  }
 
-   
-    //livestream.m3u8ファイルをバイト書込みモードで作成する。
+  //livestream.m3u8ファイルをバイト書込みモードで作成する。
 
-    //var m3u8_content = File(url_next); //m3u8ファイルを作成し、
-    //m3u8_content.writeAsBytes(m3u8_txt.content, mode: FileMode.append);
+  //var m3u8_content = File(url_next); //m3u8ファイルを作成し、
+  //m3u8_content.writeAsBytes(m3u8_txt.content, mode: FileMode.append);
 
-    //Future<String> get _localPath async {
-    //CounterStorage.readCounter();
-    //CounterStorage.writeCounter(1);
+  //Future<String> get _localPath async {
+  //CounterStorage.readCounter();
+  //CounterStorage.writeCounter(1);
 
-    //return directory.path;
-    //}
+  //return directory.path;
+  //}
 
-    //レスポンスボディをバイナリ形式で取得.
-    //m3u8_content.writeAsBytes(m3u8_txt.bodyBytes); //ivestream.m3u8にm3u8.txtのcontentを書込む（）
+  //レスポンスボディをバイナリ形式で取得.
+  //m3u8_content.writeAsBytes(m3u8_txt.bodyBytes); //ivestream.m3u8にm3u8.txtのcontentを書込む（）
 
-    //with open(url_next, 'wb') as m3u8_content:;  //m3u8ファイルを作成し、
-    //    var m3u8_content.write(m3u8_txt.content);  //m3u8_txt.content はバイト ストリームです
+  //with open(url_next, 'wb') as m3u8_content:;  //m3u8ファイルを作成し、
+  //    var m3u8_content.write(m3u8_txt.content);  //m3u8_txt.content はバイト ストリームです
 
-    //var movies = []; // 取得した完全な .ts ビデオ リンクを格納するリストを作成します
+  //var movies = []; // 取得した完全な .ts ビデオ リンクを格納するリストを作成します
 
-    //final script = File(url_next);
-    //file = await script.open(mode: FileMode.read);
-    //var m3u8_content = await file.readByte();
+  //final script = File(url_next);
+  //file = await script.open(mode: FileMode.read);
+  //var m3u8_content = await file.readByte();
 
-    //var urls = m3u8_content.readByte();//ivestream.m3u8ファイルをバイト読込モードで開く。
-    //for (http.ByteStream line in m3u8_content){
-    //    String line2 = utf8.decode(line);						// bytes -> str
-    //    if ('.ts' in line2){  // 抽出.tsファイルのリンク
-    // 完全な .ts ネットワーク リンクにステッチされ、movies リストに保存され、line2[:-1] は末尾の改行を削除します
-    //        movies.append(url_pre + line2[:-1]);
-    //    }
-    //    else{
-    //        continue;
-    //    }
-    //}
-    //urls.close();  // 閉じます
-    //return movies; // 一覧に戻ります
-  
+  //var urls = m3u8_content.readByte();//ivestream.m3u8ファイルをバイト読込モードで開く。
+  //for (http.ByteStream line in m3u8_content){
+  //    String line2 = utf8.decode(line);						// bytes -> str
+  //    if ('.ts' in line2){  // 抽出.tsファイルのリンク
+  // 完全な .ts ネットワーク リンクにステッチされ、movies リストに保存され、line2[:-1] は末尾の改行を削除します
+  //        movies.append(url_pre + line2[:-1]);
+  //    }
+  //    else{
+  //        continue;
+  //    }
+  //}
+  //urls.close();  // 閉じます
+  //return movies; // 一覧に戻ります
 
   Future<String> apiRequest(String url, Map jsonMap) async {
     HttpClient httpClient = new HttpClient();
@@ -306,8 +312,8 @@ class _MyHomePageState extends State<MyHomePage> {
     var movie_name = 'sample'; // input("input to VideoName")
 
     movie_all = await get_ts(_url);
-    var num = down_ts(movie_all);
-    // merge_ts(num)
+    var r = down_ts(movie_all);
+    //merge_ts(r);
     // change_mp4(movie_name)
     //del_ts(num)
   }
