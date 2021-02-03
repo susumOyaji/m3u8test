@@ -2,7 +2,6 @@ import 'dart:async';
 import 'dart:io';
 import 'dart:convert';
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 
 import 'package:http/http.dart' as http;
 import 'dart:collection';
@@ -171,8 +170,10 @@ class _MyHomePageState extends State<MyHomePage> {
 
     print("Downloaded中");
     for (var _url in movies) {
-      var movie_name = NumberFormat("000").format(i)+'.ts';//ビデオクリップの名前とパス(_url.split('/')[-1][-6:])  # 接続で最後の 6 ビットをファイル名として抽出します。
+      var movie_name = i.toString().padLeft(3, "0") +
+          '.ts'; //ビデオクリップの名前とパス(_url.split('/')[-1][-6:])  # 接続で最後の 6 ビットをファイル名として抽出します。
       print(movie_name); // => 001
+
       var error_get = []; // エラーが発生したリンクを格納するリストを作成します。
       try {
         //var movie = requests.get(_url, headers={'Connection': 'close'}, timeout=60,verify=False);  // .ts リンクを開きます
@@ -183,6 +184,7 @@ class _MyHomePageState extends State<MyHomePage> {
       } catch (e) {
         error_get.add(_url);
       }
+      i++;
       continue;
       print('movie_name ${movie_name}');
 
