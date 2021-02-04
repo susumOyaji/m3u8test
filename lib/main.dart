@@ -196,7 +196,7 @@ class _MyHomePageState extends State<MyHomePage> {
         down_ts(error_get[i]); // エラー一覧を再ダウンロードします
       } else {
         print("ダウンロードは成功しました。");
-        i = i + 1;
+        i = i++;
       }
       continue;
     }
@@ -322,10 +322,19 @@ class _MyHomePageState extends State<MyHomePage> {
     var _url9 =
         'https://d2nvs31859zcd8.cloudfront.net/1577f22089ebf09d4856_yamatonjp_35671135207_9154206860/720p30/highlight-741553362.m3u8';
 
+    var _url10 =
+        'https://manifest.prod.boltdns.net/manifest/v1/hls/v5/aes128/4394098882001/46a81644-e370-4ad0-ae4e-b2aa99de7462/4af72ad6-8111-4f05-8224-3ab79709f52b/10s/rendition.m3u8';
+
+    var _url11 =
+        'https://station293.openrec.tv./live/ngrp:c561827213ec8c7b1d8fac27034c8aa17cf6deb330_all/chunklist_b2328000.m3u8';
+
+    var _url12 = 'http://ivi.bupt.edu.cn/hls/cctv5phd.m3u8';
+    //'http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8';
+
     //var _url = 'http://m3u8.test.com/test.m3u8';
     var movie_name = 'sample'; // input("input to VideoName")
 
-    movie_all = await get_ts(_url9);
+    movie_all = await get_ts(_url12);
     var r = down_ts(movie_all);
     //merge_ts(r);
     // change_mp4(movie_name)
