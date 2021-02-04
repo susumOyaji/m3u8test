@@ -185,7 +185,7 @@ class _MyHomePageState extends State<MyHomePage> {
         error_get.add(_url);
       }
       i++;
-      continue;
+
       print('movie_name ${movie_name}');
 
       //final File movie_name = File('$path/' + url_next);
@@ -198,6 +198,7 @@ class _MyHomePageState extends State<MyHomePage> {
         print("ダウンロードは成功しました。");
         i = i + 1;
       }
+      continue;
     }
     print("すべてのスライスのダウンロードが完了しました。");
     num N = movies.length; // リスト要素の数を取得します
@@ -305,15 +306,26 @@ class _MyHomePageState extends State<MyHomePage> {
     var _url3 =
         'https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8';
 
-    var _url4 = 'http://www.streambox.fr/playlists/test_001/stream.m3u8';
+    //var _url4 = 'http://www.streambox.fr/playlists/test_001/stream.m3u8';
 
     var _url5 =
         'https://pae.ipportalegre.pt/testes2/wsjson/api/app/ws-authenticate';
 
+    var _url6 =
+        'https://mtg-vod-http.babahhcdn.com/mtg/_definst_/mp4:tv3/surabtuttavalt/season3/muurisepp10.mp4/playlist.m3u8';
+    var _url7 =
+        'http://1257120875.vod2.myqcloud.com/0ef121cdvodtransgzp1257120875/3055695e5285890780828799271/v.f230.m3u8';
+
+    var _url8 =
+        'Https://iqiyi.cdn9-okzy.com/20200121/5270_859c5425/1000k/hls/index.m3u8';
+
+    var _url9 =
+        'https://d2nvs31859zcd8.cloudfront.net/1577f22089ebf09d4856_yamatonjp_35671135207_9154206860/720p30/highlight-741553362.m3u8';
+
     //var _url = 'http://m3u8.test.com/test.m3u8';
     var movie_name = 'sample'; // input("input to VideoName")
 
-    movie_all = await get_ts(_url);
+    movie_all = await get_ts(_url9);
     var r = down_ts(movie_all);
     //merge_ts(r);
     // change_mp4(movie_name)
