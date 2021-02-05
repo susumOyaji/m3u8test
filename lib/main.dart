@@ -167,25 +167,22 @@ class _MyHomePageState extends State<MyHomePage> {
   Future down_ts(movies) async {
     //os.chdir(path)
     int i = 0;
-
     print("Downloaded中");
     for (var _url in movies) {
       var movie_name = i.toString().padLeft(3, "0") +
           '.ts'; //ビデオクリップの名前とパス(_url.split('/')[-1][-6:])  # 接続で最後の 6 ビットをファイル名として抽出します。
-      print(movie_name); // => 001
-
       var error_get = []; // エラーが発生したリンクを格納するリストを作成します。
+      print(movie_name); // => 001
       try {
         //var movie = requests.get(_url, headers={'Connection': 'close'}, timeout=60,verify=False);  // .ts リンクを開きます
-        var movie = await HttpClient().getUrl(Uri.parse(_url));
-        var response = await _url.close();
+        var movie = await HttpClient().getUrl(Uri.parse(_url)); // .ts リンクを開きます
+        //var response = await _url.close();
         //var m3u8_txt = await utf8.decodeStream(response);
-        print('movie ${movie}');
       } catch (e) {
         error_get.add(_url);
+        print('Error ${_url}');
       }
-      i++;
-
+      //  continue;
       print('movie_name ${movie_name}');
 
       //final File movie_name = File('$path/' + url_next);
@@ -197,8 +194,9 @@ class _MyHomePageState extends State<MyHomePage> {
       } else {
         print("ダウンロードは成功しました。");
         i = i++;
+        continue;
       }
-      continue;
+      //continue;
     }
     print("すべてのスライスのダウンロードが完了しました。");
     num N = movies.length; // リスト要素の数を取得します
