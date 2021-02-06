@@ -171,13 +171,13 @@ class _MyHomePageState extends State<MyHomePage> {
     for (var _url in movies) {
       var movie_name = i.toString().padLeft(3, "0") +
           '.ts'; //ビデオクリップの名前とパス(_url.split('/')[-1][-6:])  # 接続で最後の 6 ビットをファイル名として抽出します。
-      var error_get = []; // エラーが発生したリンクを格納するリストを作成します。
+      List<String> error_get = []; // エラーが発生したリンクを格納するリストを作成します。
       print(movie_name); // => 001
       try {
         //var movie = requests.get(_url, headers={'Connection': 'close'}, timeout=60,verify=False);  // .ts リンクを開きます
         var movie = await HttpClient().getUrl(Uri.parse(_url)); // .ts リンクを開きます
-        //var response = await _url.close();
-        //var m3u8_txt = await utf8.decodeStream(response);
+        var response = await _url.close();
+        var m3u8_txt = await utf8.decodeStream(response);
       } catch (e) {
         error_get.add(_url);
         print('Error ${_url}');
@@ -189,7 +189,7 @@ class _MyHomePageState extends State<MyHomePage> {
       //var movie_content = open('C://Reptile_video/' + movie_name, 'wb'); // ファイルをローカルに作成します
       //var movie_content = await movie_name.open(mode: FileMode.write); //テキストファイルのパスを取得。
       //movie_content.writelines(movie_name);  //スライスをダウンロードします
-      if (error_get[i]) {
+      if (error_get[i] != null) {
         down_ts(error_get[i]); // エラー一覧を再ダウンロードします
       } else {
         print("ダウンロードは成功しました。");
@@ -199,9 +199,9 @@ class _MyHomePageState extends State<MyHomePage> {
       //continue;
     }
     print("すべてのスライスのダウンロードが完了しました。");
-    num N = movies.length; // リスト要素の数を取得します
+    var len = movies.length; // リスト要素の数を取得します
 
-    return N; //要素の数を返します
+    return len; //要素の数を返します
   }
   /*
     for (String line in urls.readlines()) {
@@ -310,7 +310,7 @@ class _MyHomePageState extends State<MyHomePage> {
         'https://pae.ipportalegre.pt/testes2/wsjson/api/app/ws-authenticate';
 
     var _url6 =
-        'https://mtg-vod-http.babahhcdn.com/mtg/_definst_/mp4:tv3/surabtuttavalt/season3/muurisepp10.mp4/playlist.m3u8';
+        'http://hzresource.cdn.bcebos.com/hls/geruikldsl/hls.m3u8';
     var _url7 =
         'http://1257120875.vod2.myqcloud.com/0ef121cdvodtransgzp1257120875/3055695e5285890780828799271/v.f230.m3u8';
 
@@ -327,12 +327,25 @@ class _MyHomePageState extends State<MyHomePage> {
         'https://station293.openrec.tv./live/ngrp:c561827213ec8c7b1d8fac27034c8aa17cf6deb330_all/chunklist_b2328000.m3u8';
 
     var _url12 = 'http://ivi.bupt.edu.cn/hls/cctv5phd.m3u8';
+
+    var _url13 =
+        'https://bitdash-a.akamaihd.net/content/MI201109210084_1/m3u8s/f08e80da-bf1d-4e3d-8899-f0f6155f6efa.m3u8';
+    var _url14 =
+        'https://bitdash-a.akamaihd.net/content/sintel/hls/playlist.m3u8';
+    var _url15 = 'https://mnmedias.api.telequebec.tv/m3u8/29880.m3u8';
+    
+    
+    
+    var _url16 =
+        'http://wscdn.alhls.xiaoka.tv/201886/2f5/75a/HoHdTc1LjUaBjZbJ/index.m3u8';
+    var _url17 = 'https://zk.wb699.com/2019/03/06/aLdpUIBeHC48HGTk/playlist.m3u8';
+
     //'http://devimages.apple.com/iphone/samples/bipbop/bipbopall.m3u8';
 
     //var _url = 'http://m3u8.test.com/test.m3u8';
     var movie_name = 'sample'; // input("input to VideoName")
 
-    movie_all = await get_ts(_url12);
+    movie_all = await get_ts(_url16);
     var r = down_ts(movie_all);
     //merge_ts(r);
     // change_mp4(movie_name)
